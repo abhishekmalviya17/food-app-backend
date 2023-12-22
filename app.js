@@ -26,6 +26,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Static files
 app.use(express.static('public'));
 
+app.get('/',(req, res) => {
+  res.send('Connected')
+})
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/restaurants', restaurantRoutes);
@@ -47,6 +50,7 @@ app.use((error, req, res, next) => {
     }
   });
 });
+
 
 // Server initialization
 const PORT = process.env.PORT || 3000;
