@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
     last: { type: String, required: true }
   },
   email: { type: String, required: true, unique: true },
-  passwordHash: { type: String, required: true },
+  password: { type: String, required: true },
   phone: String,
   address: [String], // array of addresses
   paymentMethods: [{
