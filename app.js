@@ -13,6 +13,8 @@ const restaurantRoutes = require('./src/api/routes/restaurantRoutes');
 const orderRoutes = require('./src/api/routes/orderRoutes');
 const reviewRoutes = require('./src/api/routes/reviewRoutes');
 const categoryRoutes = require('./src/api/routes/categoryRoutes');
+const menuItemRoutes = require('./src/api/routes/menuItemRoutes');
+const cartRoutes = require('./src/api/routes/cartRoutes');
 const passport = require('passport');
 
 require('./config/passport')(passport); 
@@ -44,11 +46,11 @@ app.use(cors());
 
 
 // Implement a rate limiter to protect against abuse
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
-});
-app.use('/api/', limiter);
+// const limiter = rateLimit({
+//   windowMs: 15 * 60 * 1000, // 15 minutes
+//   max: 100, // Limit each IP to 100 requests per windowMs
+// });
+// app.use('/api/', limiter);
 
 // Static files
 app.use(express.static('public'));
@@ -57,14 +59,17 @@ app.get('/',(req, res) => {
   res.send('Connected')
 });
 
-// Import your authentication and authorization middleware here if applicable
+
 
 // Routes
+app.use('/api/menu-items', menuItemRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/restaurants', restaurantRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/cart', cartRoutes);
 app.use('/api/categories', categoryRoutes);
+
 
 // Error handling middleware
 app.use((req, res, next) => {

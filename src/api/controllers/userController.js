@@ -1,6 +1,9 @@
 const User = require('../../models/userModel');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
+
 
 const generateToken = (user) => {
   return jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
@@ -101,6 +104,93 @@ exports.deleteUser = async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+};
+
+
+exports.addAddress = async (req, res) => {
+  const userId = req.user._id; // Assuming user ID is available from JWT token
+  const { street, city, state, zipCode, country } = req.body;
+
+  const newAddress = { street, city, state, zipCode, country };
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    user.address.push(newAddress);
+    await user.save();
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+exports.removeAddress = async (req, res) => {
+  const userId = req.user._id; // Assuming user ID is available from JWT token
+  const { addressId } = req.body; // Assuming each address has a unique identifier (id)
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    user.address = user.address.filter(address => address.id !== addressId);
+    await user.save();
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+ exports.updateAddress = async (req, res) => {
+  const userId = req.user._id; // Assuming user ID is available from JWT token
+  const { addressId, updatedAddress } = req.body;
+  
+  try {
+      const user = await User.findById(userId);
+      if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+      }
+
+      // Find the address to be updated
+      const addressIndex = user.address.findIndex(addr => addr.id === addressId);
+      if (addressIndex === -1) {
+          return res.status(404).json({ message: 'Address not found' });
+      }
+
+      // Update the address
+      user.address[addressIndex] = updatedAddress;
+
+      await user.save();
+      res.status(200).json(user);
+  } catch (error) {
+      res.status(500).json({ message: error.message });
+  }
+};
+
+
+exports.fetchAddresses = async (req, res) => {
+  const userId = req.user._id; // Assuming user ID is available from JWT token
+
+  try {
+    // Ensure the user ID is a valid ObjectId
+    if (!ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: 'Invalid user ID' });
+    }
+
+    const user = await User.findById(userId).select('address');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json(user.address );
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 
