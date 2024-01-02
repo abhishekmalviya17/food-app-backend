@@ -15,6 +15,11 @@ exports.createUser = async (req, res) => {
   try {
     const { firstName, lastName, email, password, agreeTerms } = req.body;
 
+    const user = await User.findOne({ email });
+
+    if(user){
+      return res.status(401).json({ message: `Account with the email ${email} already exists` });
+    }
     // Create the user object to match the schema
     const userObj = {
       name: {
