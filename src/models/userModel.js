@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema({
   },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  phone: String,
+  phone: { type: String, default: 0000 },
   address: [addressSchema], // Array of address objects
   paymentMethods: [{
     cardNumber: String,
@@ -24,12 +24,12 @@ const userSchema = new mongoose.Schema({
   }],
   settings: {
     emailNotifications: {
-      newDeals: Boolean,
-      newRestaurants: Boolean,
-      orderStatuses: Boolean,
-      passwordChanges: Boolean,
-      specialOffers: Boolean,
-      newsletter: Boolean,
+      newDeals: { type: Boolean, default: false },
+      newRestaurants: { type: Boolean, default: false },
+      orderStatuses: { type: Boolean, default: false },
+      passwordChanges: { type: Boolean, default: false },
+      specialOffers: { type: Boolean, default: false },
+      newsletter: { type: Boolean, default: false },
     }
   },
   orders: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Order' }]
